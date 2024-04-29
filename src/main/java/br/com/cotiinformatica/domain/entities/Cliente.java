@@ -35,9 +35,6 @@ public class Cliente {
 	@Column(name = "data_nascimento")
 	private Date dataNascimento;
 
-	@Column(name = "foto", nullable = false)
-	private byte[] foto;
-	
 	@OneToMany(mappedBy = "cliente")
 	private List<Endereco> enderecos;
 }
