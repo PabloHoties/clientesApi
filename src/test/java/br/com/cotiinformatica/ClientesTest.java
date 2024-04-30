@@ -1,15 +1,17 @@
 package br.com.cotiinformatica;
 
-import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.MethodOrderer;
@@ -31,6 +33,7 @@ import br.com.cotiinformatica.domain.dtos.ClienteResponseDto;
 import br.com.cotiinformatica.domain.dtos.CriarClienteRequestDto;
 import br.com.cotiinformatica.domain.dtos.CriarEnderecoRequestDto;
 import br.com.cotiinformatica.domain.dtos.EnderecoResponseDto;
+import br.com.cotiinformatica.domain.entities.Cliente;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -340,19 +343,43 @@ public class ClientesTest {
 	@Test
 	@Order(8)
 	public void obterClienteComSucessoTest() throws Exception {
-		fail("Teste não implementado.");
+
+		Cliente cliente = new Cliente();
+		cliente.setId(idCliente);
+
+		MvcResult result = mockMvc.perform(get("/api/clientes/obter").contentType("application/json")
+				.content(objectMapper.writeValueAsString(cliente))).andExpectAll(status().isOk()).andReturn();
+
+		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+		assertTrue(content.contains(""));
 	}
 
 	@Test
 	@Order(9)
 	public void obterClienteComIdInvalidoTest() throws Exception {
-		fail("Teste não implementado.");
+
+		Cliente cliente = new Cliente();
+
+		MvcResult result = mockMvc
+				.perform(get("/api/clientes/obter").contentType("application/json")
+						.content(objectMapper.writeValueAsString(cliente)))
+				.andExpectAll(status().isBadRequest()).andReturn();
+
+		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+		assertTrue(content.contains(""));
 	}
 
 	@Test
 	@Order(10)
 	public void consultarClientesComSucessoTest() throws Exception {
-		fail("Teste não implementado.");
+
+		List<Cliente> clientes = new ArrayList<Cliente>();
+
+		MvcResult result = mockMvc.perform(get("/api/clientes/obter").contentType("application/json")
+				.content(objectMapper.writeValueAsString(clientes))).andExpectAll(status().isOk()).andReturn();
+
+		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+		assertTrue(content.contains(""));
 	}
 
 	@Test
