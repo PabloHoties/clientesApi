@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.nio.charset.StandardCharsets;
@@ -44,6 +46,7 @@ public class ClientesTest {
 	static String cpf;
 	static UUID idCliente;
 	static UUID idEndereco;
+	static UUID novoIdCliente;
 
 	@Test
 	@Order(1)
@@ -56,7 +59,7 @@ public class ClientesTest {
 		cliente.setEmail(faker.internet().emailAddress());
 		cliente.setCpf(faker.number().digits(11));
 		cliente.setDataNascimento(faker.date().birthday());
-		
+
 		CriarEnderecoRequestDto endereco = new CriarEnderecoRequestDto();
 		endereco.setLogradouro(faker.regexify("^[a-zA-ZÀ-ÿ0-9\s]{10,100}$"));
 		endereco.setComplemento(faker.regexify("^[a-zA-ZÀ-ÿ0-9\s]{5,25}$"));
@@ -65,21 +68,23 @@ public class ClientesTest {
 		endereco.setCidade(faker.regexify("^[a-zA-ZÀ-ÿ\s]{3,25}$"));
 		endereco.setUf(faker.regexify("^[A-Z]{2}$"));
 		endereco.setCep(faker.regexify("^\\d{5}-\\d{3}"));
-		
+
 		cliente.getEnderecos().add(endereco);
 
-		MvcResult result = mockMvc.perform(post("/api/clientes/criar").contentType("application/json")
-				.content(objectMapper.writeValueAsString(cliente))).andExpectAll(status().isCreated()).andReturn();
+		MvcResult result = mockMvc
+				.perform(post("/api/clientes/criar").contentType("application/json")
+						.content(objectMapper.writeValueAsString(cliente)))
+				.andExpectAll(status().isCreated()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-		
+
 		ClienteResponseDto clienteResponse = objectMapper.readValue(content, ClienteResponseDto.class);
 		assertNotNull(clienteResponse.getId());
 		assertEquals(clienteResponse.getNome(), cliente.getNome());
 		assertEquals(clienteResponse.getEmail(), cliente.getEmail());
 		assertEquals(clienteResponse.getCpf(), cliente.getCpf());
 		assertEquals(clienteResponse.getDataNascimento(), cliente.getDataNascimento());
-		
+
 		EnderecoResponseDto enderecoResponse = objectMapper.readValue(content, EnderecoResponseDto.class);
 		assertNotNull(enderecoResponse.getId());
 		assertEquals(enderecoResponse.getLogradouro(), endereco.getLogradouro());
@@ -97,16 +102,16 @@ public class ClientesTest {
 
 	@Test
 	@Order(2)
-	public void criarClienteComCpfInvalidoTest() throws Exception {		
-		
+	public void criarClienteComCpfInvalidoTest() throws Exception {
+
 		Faker faker = new Faker();
-		
+
 		CriarClienteRequestDto cliente = new CriarClienteRequestDto();
 		cliente.setNome(faker.name().fullName());
 		cliente.setEmail(faker.internet().emailAddress());
 		cliente.setCpf(cpf);
 		cliente.setDataNascimento(faker.date().birthday());
-		
+
 		CriarEnderecoRequestDto endereco = new CriarEnderecoRequestDto();
 		endereco.setLogradouro(faker.regexify("^[a-zA-ZÀ-ÿ0-9\s]{10,100}$"));
 		endereco.setComplemento(faker.regexify("^[a-zA-ZÀ-ÿ0-9\s]{5,25}$"));
@@ -115,19 +120,15 @@ public class ClientesTest {
 		endereco.setCidade(faker.regexify("^[a-zA-ZÀ-ÿ\s]{3,25}$"));
 		endereco.setUf(faker.regexify("^[A-Z]{2}$"));
 		endereco.setCep(faker.regexify("^\\d{5}-\\d{3}"));
-		
+
 		cliente.getEnderecos().add(endereco);
-		
-		MvcResult result = mockMvc.perform
-				(post("/api/clientes/criar")
-				.contentType("application/json")
-				.content(objectMapper
-						.writeValueAsString(cliente)))
-				.andExpectAll(status().isBadRequest())
-				.andReturn();
-		
-		String content = result.getResponse()
-				.getContentAsString(StandardCharsets.UTF_8);
+
+		MvcResult result = mockMvc
+				.perform(post("/api/clientes/criar").contentType("application/json")
+						.content(objectMapper.writeValueAsString(cliente)))
+				.andExpectAll(status().isBadRequest()).andReturn();
+
+		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 		assertTrue(content.contains(""));
 	}
 
@@ -140,7 +141,7 @@ public class ClientesTest {
 		cliente.setEmail("");
 		cliente.setCpf("");
 		cliente.setDataNascimento(null);
-		
+
 		CriarEnderecoRequestDto endereco = new CriarEnderecoRequestDto();
 		endereco.setLogradouro("");
 		endereco.setComplemento("");
@@ -150,8 +151,10 @@ public class ClientesTest {
 		endereco.setUf("");
 		endereco.setCep("");
 
-		MvcResult result = mockMvc.perform(post("/api/clientes/criar").contentType("application/json")
-				.content(objectMapper.writeValueAsString(cliente))).andExpectAll(status().isBadRequest()).andReturn();
+		MvcResult result = mockMvc
+				.perform(post("/api/clientes/criar").contentType("application/json")
+						.content(objectMapper.writeValueAsString(cliente)))
+				.andExpectAll(status().isBadRequest()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 		assertTrue(content.contains(""));
@@ -160,7 +163,7 @@ public class ClientesTest {
 	@Test
 	@Order(4)
 	public void atualizarClienteComSucessoTest() throws Exception {
-		
+
 		Faker faker = new Faker();
 
 		AtualizarClienteRequestDto cliente = new AtualizarClienteRequestDto();
@@ -169,7 +172,7 @@ public class ClientesTest {
 		cliente.setEmail(faker.internet().emailAddress());
 		cliente.setCpf(faker.number().digits(11));
 		cliente.setDataNascimento(faker.date().birthday());
-		
+
 		AtualizarEnderecoRequestDto endereco = new AtualizarEnderecoRequestDto();
 		endereco.setId(idEndereco);
 		endereco.setLogradouro(faker.regexify("^[a-zA-ZÀ-ÿ0-9\s]{10,100}$"));
@@ -179,21 +182,21 @@ public class ClientesTest {
 		endereco.setCidade(faker.regexify("^[a-zA-ZÀ-ÿ\s]{3,25}$"));
 		endereco.setUf(faker.regexify("^[A-Z]{2}$"));
 		endereco.setCep(faker.regexify("^\\d{5}-\\d{3}"));
-		
+
 		cliente.getEnderecos().add(endereco);
 
-		MvcResult result = mockMvc.perform(post("/api/clientes/criar").contentType("application/json")
+		MvcResult result = mockMvc.perform(put("/api/clientes/atualizar").contentType("application/json")
 				.content(objectMapper.writeValueAsString(cliente))).andExpectAll(status().isOk()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-		
+
 		ClienteResponseDto clienteResponse = objectMapper.readValue(content, ClienteResponseDto.class);
 		assertNotNull(clienteResponse.getId());
 		assertEquals(clienteResponse.getNome(), cliente.getNome());
 		assertEquals(clienteResponse.getEmail(), cliente.getEmail());
 		assertEquals(clienteResponse.getCpf(), cliente.getCpf());
 		assertEquals(clienteResponse.getDataNascimento(), cliente.getDataNascimento());
-		
+
 		EnderecoResponseDto enderecoResponse = objectMapper.readValue(content, EnderecoResponseDto.class);
 		assertNotNull(enderecoResponse.getId());
 		assertEquals(enderecoResponse.getLogradouro(), endereco.getLogradouro());
@@ -208,7 +211,7 @@ public class ClientesTest {
 	@Test
 	@Order(5)
 	public void atualizarClienteComIdInvalidoTest() throws Exception {
-		
+
 		Faker faker = new Faker();
 
 		AtualizarClienteRequestDto cliente = new AtualizarClienteRequestDto();
@@ -217,7 +220,7 @@ public class ClientesTest {
 		cliente.setEmail(faker.internet().emailAddress());
 		cliente.setCpf(faker.number().digits(11));
 		cliente.setDataNascimento(faker.date().birthday());
-		
+
 		AtualizarEnderecoRequestDto endereco = new AtualizarEnderecoRequestDto();
 		endereco.setId(UUID.randomUUID());
 		endereco.setLogradouro(faker.regexify("^[a-zA-ZÀ-ÿ0-9\s]{10,100}$"));
@@ -227,11 +230,13 @@ public class ClientesTest {
 		endereco.setCidade(faker.regexify("^[a-zA-ZÀ-ÿ\s]{3,25}$"));
 		endereco.setUf(faker.regexify("^[A-Z]{2}$"));
 		endereco.setCep(faker.regexify("^\\d{5}-\\d{3}"));
-		
+
 		cliente.getEnderecos().add(endereco);
 
-		MvcResult result = mockMvc.perform(post("/api/clientes/criar").contentType("application/json")
-				.content(objectMapper.writeValueAsString(cliente))).andExpectAll(status().isBadRequest()).andReturn();
+		MvcResult result = mockMvc
+				.perform(put("/api/clientes/atualizar").contentType("application/json")
+						.content(objectMapper.writeValueAsString(cliente)))
+				.andExpectAll(status().isBadRequest()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 		assertTrue(content.contains(""));
@@ -241,16 +246,16 @@ public class ClientesTest {
 	@Test
 	@Order(6)
 	public void atualizarClienteComCpfInvalidoTest() throws Exception {
-		
+
 		Faker faker = new Faker();
-		
-		//Criando um novo cliente.
+
+		// Criando um novo cliente.
 		CriarClienteRequestDto novoCliente = new CriarClienteRequestDto();
 		novoCliente.setNome(faker.name().fullName());
 		novoCliente.setEmail(faker.internet().emailAddress());
 		novoCliente.setCpf(faker.number().digits(11));
 		novoCliente.setDataNascimento(faker.date().birthday());
-		
+
 		CriarEnderecoRequestDto novoEndereco = new CriarEnderecoRequestDto();
 		novoEndereco.setLogradouro(faker.regexify("^[a-zA-ZÀ-ÿ0-9\s]{10,100}$"));
 		novoEndereco.setComplemento(faker.regexify("^[a-zA-ZÀ-ÿ0-9\s]{5,25}$"));
@@ -259,26 +264,26 @@ public class ClientesTest {
 		novoEndereco.setCidade(faker.regexify("^[a-zA-ZÀ-ÿ\s]{3,25}$"));
 		novoEndereco.setUf(faker.regexify("^[A-Z]{2}$"));
 		novoEndereco.setCep(faker.regexify("^\\d{5}-\\d{3}"));
-		
+
 		novoCliente.getEnderecos().add(novoEndereco);
 
 		MvcResult novoResult = mockMvc.perform(post("/api/clientes/criar").contentType("application/json")
 				.content(objectMapper.writeValueAsString(novoCliente))).andReturn();
 
 		String novoContent = novoResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
-		
+
 		ClienteResponseDto clienteResponse = objectMapper.readValue(novoContent, ClienteResponseDto.class);
-		
+
 		String cpfNovo = clienteResponse.getCpf();
-		
-		//Atualizando um cliente com um CPF de outro cliente.
+
+		// Atualizando um cliente com um CPF de outro cliente.
 		AtualizarClienteRequestDto cliente = new AtualizarClienteRequestDto();
 		cliente.setId(idCliente);
 		cliente.setNome(faker.name().fullName());
 		cliente.setEmail(faker.internet().emailAddress());
 		cliente.setCpf(cpfNovo);
 		cliente.setDataNascimento(faker.date().birthday());
-		
+
 		AtualizarEnderecoRequestDto endereco = new AtualizarEnderecoRequestDto();
 		endereco.setId(idEndereco);
 		endereco.setLogradouro(faker.regexify("^[a-zA-ZÀ-ÿ0-9\s]{10,100}$"));
@@ -288,11 +293,13 @@ public class ClientesTest {
 		endereco.setCidade(faker.regexify("^[a-zA-ZÀ-ÿ\s]{3,25}$"));
 		endereco.setUf(faker.regexify("^[A-Z]{2}$"));
 		endereco.setCep(faker.regexify("^\\d{5}-\\d{3}"));
-		
+
 		cliente.getEnderecos().add(endereco);
 
-		MvcResult result = mockMvc.perform(post("/api/clientes/criar").contentType("application/json")
-				.content(objectMapper.writeValueAsString(cliente))).andExpectAll(status().isBadRequest()).andReturn();
+		MvcResult result = mockMvc
+				.perform(put("/api/clientes/atualizar").contentType("application/json")
+						.content(objectMapper.writeValueAsString(cliente)))
+				.andExpectAll(status().isBadRequest()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 		assertTrue(content.contains(""));
@@ -308,7 +315,7 @@ public class ClientesTest {
 		cliente.setEmail("");
 		cliente.setCpf("");
 		cliente.setDataNascimento(null);
-		
+
 		AtualizarEnderecoRequestDto endereco = new AtualizarEnderecoRequestDto();
 		endereco.setId(null);
 		endereco.setLogradouro("");
@@ -318,11 +325,13 @@ public class ClientesTest {
 		endereco.setCidade("");
 		endereco.setUf("");
 		endereco.setCep("");
-		
+
 		cliente.getEnderecos().add(endereco);
 
-		MvcResult result = mockMvc.perform(post("/api/clientes/criar").contentType("application/json")
-				.content(objectMapper.writeValueAsString(cliente))).andExpectAll(status().isOk()).andReturn();
+		MvcResult result = mockMvc
+				.perform(put("/api/clientes/atualizar").contentType("application/json")
+						.content(objectMapper.writeValueAsString(cliente)))
+				.andExpectAll(status().isBadRequest()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 		assertTrue(content.contains(""));
@@ -330,31 +339,51 @@ public class ClientesTest {
 
 	@Test
 	@Order(8)
-	public void deletarClienteComSucessoTest() throws Exception {
-		fail("Teste não implementado.");
-	}
-
-	@Test
-	@Order(9)
-	public void deletarClienteComIdInvalidoTest() throws Exception {
-		fail("Teste não implementado.");
-	}
-
-	@Test
-	@Order(10)
 	public void obterClienteComSucessoTest() throws Exception {
 		fail("Teste não implementado.");
 	}
 
 	@Test
-	@Order(11)
+	@Order(9)
 	public void obterClienteComIdInvalidoTest() throws Exception {
 		fail("Teste não implementado.");
 	}
 
 	@Test
-	@Order(12)
+	@Order(10)
 	public void consultarClientesComSucessoTest() throws Exception {
 		fail("Teste não implementado.");
 	}
+
+	@Test
+	@Order(11)
+	public void deletarClienteComSucessoTest() throws Exception {
+
+		MvcResult result = mockMvc
+				.perform(delete("/api/clientes/deletar/{id}", idCliente.toString()).contentType("application/json"))
+				.andExpectAll(status().isOk()).andReturn();
+
+		MvcResult novoResult = mockMvc
+				.perform(delete("/api/clientes/deletar/{id}", novoIdCliente.toString()).contentType("application/json"))
+				.andExpectAll(status().isOk()).andReturn();
+
+		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+		assertTrue(content.contains(""));
+
+		String novoContent = novoResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+		assertTrue(novoContent.contains(""));
+	}
+
+	@Test
+	@Order(12)
+	public void deletarClienteComIdInvalidoTest() throws Exception {
+
+		MvcResult result = mockMvc
+				.perform(delete("/api/clientes/deletar/{id}", idCliente.toString()).contentType("application/json"))
+				.andExpectAll(status().isOk()).andReturn();
+
+		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+		assertTrue(content.contains(""));
+	}
+
 }
