@@ -129,7 +129,7 @@ public class ClientesTest {
 		MvcResult result = mockMvc
 				.perform(post("/api/clientes/criar").contentType("application/json")
 						.content(objectMapper.writeValueAsString(cliente)))
-				.andExpectAll(status().isBadRequest()).andReturn();
+				.andExpectAll(status().isUnprocessableEntity()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 		assertTrue(content.contains("O CPF informado já está cadastrado."));
@@ -244,7 +244,7 @@ public class ClientesTest {
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 		assertTrue(content.contains("Não foi possível encontrar um cliente com o ID informado."));
 	}
-	
+
 	@Test
 	@Order(6)
 	public void atualizarClienteComIdDoEnderecoInvalidoTest() throws Exception {
@@ -335,7 +335,7 @@ public class ClientesTest {
 		MvcResult result = mockMvc
 				.perform(put("/api/clientes/atualizar").contentType("application/json")
 						.content(objectMapper.writeValueAsString(cliente)))
-				.andExpectAll(status().isBadRequest()).andReturn();
+				.andExpectAll(status().isUnprocessableEntity()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 		assertTrue(content.contains("O CPF informado pertence a outro cliente."));
@@ -399,7 +399,7 @@ public class ClientesTest {
 				.andExpectAll(status().isBadRequest()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-		assertTrue(content.contains(""));
+		assertTrue(content.contains("O ID informado não corresponde a um cliente."));
 	}
 
 	@Test
@@ -440,10 +440,10 @@ public class ClientesTest {
 
 		MvcResult result = mockMvc
 				.perform(delete("/api/clientes/deletar/{id}", idCliente.toString()).contentType("application/json"))
-				.andExpectAll(status().isOk()).andReturn();
+				.andExpectAll(status().isBadRequest()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-		assertTrue(content.contains(""));
+		assertTrue(content.contains("O ID informado não corresponde a um cliente."));
 	}
 
 }

@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import br.com.cotiinformatica.domain.dtos.AtualizarClienteRequestDto;
@@ -73,30 +74,49 @@ public class ClienteDomainServiceImpl implements ClienteDomainService {
 
 		Cliente cliente = modelMapper.map(dtoCliente, Cliente.class);
 		Endereco endereco = modelMapper.map(dtoEndereco, Endereco.class);
-		
+
 		cliente.getEnderecos().add(endereco);
 		clienteRepository.save(cliente);
-		
+
 		ClienteResponseDto response = modelMapper.map(cliente, ClienteResponseDto.class);
 		return response;
 	}
 
 	@Override
 	public ClienteResponseDto deletarCliente(UUID id) {
-		// TODO Auto-generated method stub
-		return null;
+
+		Optional<Cliente> cliente = clienteRepository.findById(id);
+
+		if (cliente.isEmpty())
+			throw new IllegalArgumentException("O ID informado não corresponde a um cliente.");
+
+		ClienteResponseDto response = modelMapper.map(cliente.get(), ClienteResponseDto.class);
+
+		clienteRepository.delete(cliente.get());
+
+		return response;
 	}
 
 	@Override
 	public ClienteResponseDto obterCliente(UUID id) {
-		// TODO Auto-generated method stub
-		return null;
+
+		Optional<Cliente> cliente = clienteRepository.findById(id);
+
+		if (cliente.isEmpty())
+			throw new IllegalArgumentException("O ID informado não corresponde a um cliente.");
+
+		ClienteResponseDto response = modelMapper.map(cliente.get(), ClienteResponseDto.class);
+		return response;
 	}
 
 	@Override
 	public List<ClienteResponseDto> consultarClientes() {
-		// TODO Auto-generated method stub
-		return null;
+
+		List<Cliente> clientes = clienteRepository.findAll();
+
+		List<ClienteResponseDto> response = modelMapper.map(clientes, new TypeToken<List<ClienteResponseDto>>() {
+		}.getType());
+		return response;
 	}
 
 }
