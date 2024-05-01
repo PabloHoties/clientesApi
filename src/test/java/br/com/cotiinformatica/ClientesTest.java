@@ -132,7 +132,7 @@ public class ClientesTest {
 				.andExpectAll(status().isBadRequest()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-		assertTrue(content.contains(""));
+		assertTrue(content.contains("O CPF informado já está cadastrado."));
 	}
 
 	@Test
@@ -213,12 +213,46 @@ public class ClientesTest {
 
 	@Test
 	@Order(5)
-	public void atualizarClienteComIdInvalidoTest() throws Exception {
+	public void atualizarClienteComIdDoClienteInvalidoTest() throws Exception {
 
 		Faker faker = new Faker();
 
 		AtualizarClienteRequestDto cliente = new AtualizarClienteRequestDto();
 		cliente.setId(UUID.randomUUID());
+		cliente.setNome(faker.name().fullName());
+		cliente.setEmail(faker.internet().emailAddress());
+		cliente.setCpf(faker.number().digits(11));
+		cliente.setDataNascimento(faker.date().birthday());
+
+		AtualizarEnderecoRequestDto endereco = new AtualizarEnderecoRequestDto();
+		endereco.setId(idEndereco);
+		endereco.setLogradouro(faker.regexify("^[a-zA-ZÀ-ÿ0-9\s]{10,100}$"));
+		endereco.setComplemento(faker.regexify("^[a-zA-ZÀ-ÿ0-9\s]{5,25}$"));
+		endereco.setNumero(faker.regexify("^\\d{1,5}$"));
+		endereco.setBairro(faker.regexify("^[a-zA-ZÀ-ÿ\s]{3,25}$"));
+		endereco.setCidade(faker.regexify("^[a-zA-ZÀ-ÿ\s]{3,25}$"));
+		endereco.setUf(faker.regexify("^[A-Z]{2}$"));
+		endereco.setCep(faker.regexify("^\\d{5}-\\d{3}"));
+
+		cliente.getEnderecos().add(endereco);
+
+		MvcResult result = mockMvc
+				.perform(put("/api/clientes/atualizar").contentType("application/json")
+						.content(objectMapper.writeValueAsString(cliente)))
+				.andExpectAll(status().isBadRequest()).andReturn();
+
+		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+		assertTrue(content.contains("Não foi possível encontrar um cliente com o ID informado."));
+	}
+	
+	@Test
+	@Order(6)
+	public void atualizarClienteComIdDoEnderecoInvalidoTest() throws Exception {
+
+		Faker faker = new Faker();
+
+		AtualizarClienteRequestDto cliente = new AtualizarClienteRequestDto();
+		cliente.setId(idCliente);
 		cliente.setNome(faker.name().fullName());
 		cliente.setEmail(faker.internet().emailAddress());
 		cliente.setCpf(faker.number().digits(11));
@@ -242,12 +276,11 @@ public class ClientesTest {
 				.andExpectAll(status().isBadRequest()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-		assertTrue(content.contains(""));
-		assertTrue(content.contains(""));
+		assertTrue(content.contains("O ID do endereço informado pertence a outro cliente."));
 	}
 
 	@Test
-	@Order(6)
+	@Order(7)
 	public void atualizarClienteComCpfInvalidoTest() throws Exception {
 
 		Faker faker = new Faker();
@@ -305,11 +338,11 @@ public class ClientesTest {
 				.andExpectAll(status().isBadRequest()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-		assertTrue(content.contains(""));
+		assertTrue(content.contains("O CPF informado pertence a outro cliente."));
 	}
 
 	@Test
-	@Order(7)
+	@Order(8)
 	public void atualizarClienteComDadosInvalidosTest() throws Exception {
 
 		AtualizarClienteRequestDto cliente = new AtualizarClienteRequestDto();
@@ -341,7 +374,7 @@ public class ClientesTest {
 	}
 
 	@Test
-	@Order(8)
+	@Order(9)
 	public void obterClienteComSucessoTest() throws Exception {
 
 		Cliente cliente = new Cliente();
@@ -355,7 +388,7 @@ public class ClientesTest {
 	}
 
 	@Test
-	@Order(9)
+	@Order(10)
 	public void obterClienteComIdInvalidoTest() throws Exception {
 
 		Cliente cliente = new Cliente();
@@ -370,7 +403,7 @@ public class ClientesTest {
 	}
 
 	@Test
-	@Order(10)
+	@Order(11)
 	public void consultarClientesComSucessoTest() throws Exception {
 
 		List<Cliente> clientes = new ArrayList<Cliente>();
@@ -383,7 +416,7 @@ public class ClientesTest {
 	}
 
 	@Test
-	@Order(11)
+	@Order(12)
 	public void deletarClienteComSucessoTest() throws Exception {
 
 		MvcResult result = mockMvc
@@ -402,7 +435,7 @@ public class ClientesTest {
 	}
 
 	@Test
-	@Order(12)
+	@Order(13)
 	public void deletarClienteComIdInvalidoTest() throws Exception {
 
 		MvcResult result = mockMvc
