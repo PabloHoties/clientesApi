@@ -27,11 +27,11 @@ public class CriarEnderecoRequestDto {
 	@NotEmpty(message = "Por favor, informe a cidade do cliente.")
 	private String cidade;
 
-	@Pattern(regexp = "^[A-Z]{2}$", message = "Por favor, informe uma sigla com os caracteres maíusculos.")
+	@Pattern(regexp = "^[A-Z]{2}$", message = "Por favor, informe uma sigla com os caracteres maiúsculos.")
 	@NotEmpty(message = "Por favor, informe a sigla do estado.")
 	private String uf;
 
-	@Pattern(regexp = "^\\d{5}-\\d{3}", message = "Por favor, informe um CEP no formato '12345-678'")
+	@Pattern(regexp = "^\\d{5}-\\d{3}", message = "Por favor, informe um CEP no formato '12345-678'.")
 	@NotEmpty(message = "Por favor, informe o CEP do endereço.")
 	private String cep;
 }

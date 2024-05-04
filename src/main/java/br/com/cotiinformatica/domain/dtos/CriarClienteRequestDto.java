@@ -1,7 +1,6 @@
 package br.com.cotiinformatica.domain.dtos;
 
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -15,7 +14,7 @@ import lombok.Data;
 @Data
 public class CriarClienteRequestDto {
 
-	@Pattern(regexp = "^[a-zA-ZÀ-ÿ\s]{8,100}$", message = "Por favor, insira um nome válido.")
+	@Pattern(regexp = "^[a-zA-ZÀ-ÿ'.\s]{8,100}$", message = "Por favor, insira um nome válido.")
 	@NotEmpty(message = "Por favor, informe o nome do cliente.")
 	private String nome;
 
@@ -33,5 +32,5 @@ public class CriarClienteRequestDto {
 	private Date dataNascimento;
 
 	@NotNull(message = "Por favor, informe as informações do endereço do cliente.")
-	private List<CriarEnderecoRequestDto> enderecos;
+	private CriarEnderecoRequestDto endereco;
 }
