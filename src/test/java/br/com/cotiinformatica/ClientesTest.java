@@ -457,26 +457,20 @@ public class ClientesTest {
 	@Test
 	@Order(14)
 	public void deletarClienteComSucessoTest() throws Exception {
-		fail("Teste em espera.");
+
 		MvcResult result = mockMvc
 				.perform(delete("/api/clientes/deletar/{id}", idCliente.toString()).contentType("application/json"))
 				.andExpectAll(status().isOk()).andReturn();
 
-		MvcResult novoResult = mockMvc
-				.perform(delete("/api/clientes/deletar/{id}", novoIdCliente.toString()).contentType("application/json"))
-				.andExpectAll(status().isOk()).andReturn();
-
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-		assertTrue(content.contains(""));
-
-		String novoContent = novoResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
-		assertTrue(novoContent.contains(""));
+		assertTrue(content.contains((idCliente).toString()));
+		assertTrue(content.contains((idEndereco).toString()));
 	}
 
 	@Test
 	@Order(15)
 	public void deletarClienteComIdInvalidoTest() throws Exception {
-		fail("Teste em espera.");
+		
 		MvcResult result = mockMvc
 				.perform(delete("/api/clientes/deletar/{id}", idCliente.toString()).contentType("application/json"))
 				.andExpectAll(status().isBadRequest()).andReturn();

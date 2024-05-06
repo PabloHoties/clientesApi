@@ -2,9 +2,12 @@ package br.com.cotiinformatica.application.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -57,6 +60,13 @@ public class ClientesController {
 		}
 		
 		ClienteResponseDto response = clienteDomainService.atualizarCliente(dto);
+		return ResponseEntity.status(200).body(response);
+	}
+	
+	@DeleteMapping("deletar/{id}")
+	public ResponseEntity<ClienteResponseDto> deletar(@PathVariable("id") UUID id) {
+		
+		ClienteResponseDto response = clienteDomainService.deletarCliente(id);
 		return ResponseEntity.status(200).body(response);
 	}
 }

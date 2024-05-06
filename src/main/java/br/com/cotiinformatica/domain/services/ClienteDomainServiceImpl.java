@@ -107,6 +107,10 @@ public class ClienteDomainServiceImpl implements ClienteDomainService {
 
 		ClienteResponseDto response = modelMapper.map(cliente.get(), ClienteResponseDto.class);
 
+		List<Endereco> enderecos = cliente.get().getEnderecos();
+		for (Endereco endereco : enderecos) {
+		    enderecoRepository.delete(endereco);
+		}
 		clienteRepository.delete(cliente.get());
 
 		return response;
