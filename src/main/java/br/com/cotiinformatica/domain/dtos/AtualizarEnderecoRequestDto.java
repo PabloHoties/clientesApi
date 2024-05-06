@@ -37,7 +37,7 @@ public class AtualizarEnderecoRequestDto {
 	@NotEmpty(message = "Por favor, informe a sigla do estado.")
 	private String uf;
 
-	@Pattern(regexp = "^\\d{5}-\\d{3}", message = "Por favor, informe um CEP no formato '12345-678'")
+	@Pattern(regexp = "^\\d{5}-\\d{3}", message = "Por favor, informe um CEP no formato '12345-678'.")
 	@NotEmpty(message = "Por favor, informe o CEP do endereço.")
 	private String cep;
 }

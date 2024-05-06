@@ -9,9 +9,9 @@ import br.com.cotiinformatica.domain.dtos.CriarClienteRequestDto;
 
 public interface ClienteDomainService {
 
-	ClienteResponseDto criarCliente(CriarClienteRequestDto dtoCliente);
+	ClienteResponseDto criarCliente(CriarClienteRequestDto dto);
 	
-	ClienteResponseDto atualizarCliente(AtualizarClienteRequestDto dtoCliente);
+	ClienteResponseDto atualizarCliente(AtualizarClienteRequestDto dto);
 	
 	ClienteResponseDto deletarCliente(UUID id);
 	

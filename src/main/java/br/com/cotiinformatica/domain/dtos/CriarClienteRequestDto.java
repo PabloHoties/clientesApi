@@ -9,12 +9,13 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class CriarClienteRequestDto {
 
-	@Pattern(regexp = "^[a-zA-ZÀ-ÿ'.\s]{8,100}$", message = "Por favor, insira um nome válido.")
+	@Size(min = 5, max = 150, message = "Por favor, insira um nome válido.")
 	@NotEmpty(message = "Por favor, informe o nome do cliente.")
 	private String nome;
 

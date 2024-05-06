@@ -1,7 +1,6 @@
 package br.com.cotiinformatica.domain.dtos;
 
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -11,6 +10,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
@@ -19,7 +19,7 @@ public class AtualizarClienteRequestDto {
 	@NotNull(message = "Por favor, informe o ID do cliente.")
 	private UUID id;
 	
-	@Pattern(regexp = "^[a-zA-ZÀ-ÿ\s]{8,100}$", message = "Por favor, insira um nome válido.")
+	@Size(min = 5, max = 150, message = "Por favor, insira um nome válido.")
 	@NotEmpty(message = "Por favor, informe o nome do cliente.")
 	private String nome;
 
@@ -37,5 +37,5 @@ public class AtualizarClienteRequestDto {
 	private Date dataNascimento;
 
 	@NotNull(message = "Por favor, informe as informações do endereço do cliente.")
-	private List<AtualizarEnderecoRequestDto> enderecos;
+	private AtualizarEnderecoRequestDto endereco;
 }
