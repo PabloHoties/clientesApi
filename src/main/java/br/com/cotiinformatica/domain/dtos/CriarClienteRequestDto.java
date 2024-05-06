@@ -15,7 +15,7 @@ import lombok.Data;
 @Data
 public class CriarClienteRequestDto {
 
-	@Size(min = 5, max = 150, message = "Por favor, insira um nome válido.")
+	@Size(min = 8, max = 100, message = "Por favor, insira um nome válido.")
 	@NotEmpty(message = "Por favor, informe o nome do cliente.")
 	private String nome;
 

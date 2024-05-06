@@ -131,7 +131,7 @@ public class ClienteDomainServiceImpl implements ClienteDomainService {
 	@Override
 	public List<ClienteResponseDto> consultarClientes() {
 
-		List<Cliente> clientes = clienteRepository.findAll();
+		List<Cliente> clientes = clienteRepository.findAllByNome();
 
 		List<ClienteResponseDto> response = modelMapper.map(clientes, new TypeToken<List<ClienteResponseDto>>() {
 		}.getType());
