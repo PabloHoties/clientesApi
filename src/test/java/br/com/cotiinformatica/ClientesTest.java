@@ -1,6 +1,5 @@
 package br.com.cotiinformatica;
 
-import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -62,7 +61,7 @@ public class ClientesTest {
 		dto.setEmail(faker.internet().emailAddress());
 		dto.setCpf(faker.number().digits(11));
 		dto.setDataNascimento(faker.date().birthday());
-		
+
 		dto.setEndereco(new CriarEnderecoRequestDto());
 		dto.getEndereco().setLogradouro(faker.regexify("[a-zA-ZÀ-ÿ0-9\s]{10,100}"));
 		dto.getEndereco().setComplemento(faker.regexify("[a-zA-ZÀ-ÿ0-9\s]{5,25}"));
@@ -72,20 +71,18 @@ public class ClientesTest {
 		dto.getEndereco().setUf(faker.regexify("[A-Z]{2}"));
 		dto.getEndereco().setCep(faker.regexify("\\d{5}-\\d{3}"));
 
-		MvcResult result = mockMvc
-				.perform(post("/api/clientes/criar").contentType("application/json")
-						.content(objectMapper.writeValueAsString(dto)))
-				.andExpectAll(status().isCreated()).andReturn();
+		MvcResult result = mockMvc.perform(post("/api/clientes/criar").contentType("application/json")
+				.content(objectMapper.writeValueAsString(dto))).andExpectAll(status().isCreated()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-		
+
 		ClienteResponseDto clienteResponse = objectMapper.readValue(content, ClienteResponseDto.class);
 		assertNotNull(clienteResponse.getId());
 		assertEquals(clienteResponse.getNome(), dto.getNome());
 		assertEquals(clienteResponse.getEmail(), dto.getEmail());
 		assertEquals(clienteResponse.getCpf(), dto.getCpf());
 		assertEquals(clienteResponse.getDataNascimento(), dto.getDataNascimento());
-		
+
 		assertNotNull(clienteResponse.getEnderecos().get(0).getId());
 		assertEquals(clienteResponse.getEnderecos().get(0).getLogradouro(), dto.getEndereco().getLogradouro());
 		assertEquals(clienteResponse.getEnderecos().get(0).getComplemento(), dto.getEndereco().getComplemento());
@@ -94,7 +91,7 @@ public class ClientesTest {
 		assertEquals(clienteResponse.getEnderecos().get(0).getCidade(), dto.getEndereco().getCidade());
 		assertEquals(clienteResponse.getEnderecos().get(0).getUf(), dto.getEndereco().getUf());
 		assertEquals(clienteResponse.getEnderecos().get(0).getCep(), dto.getEndereco().getCep());
-		
+
 		cpf = dto.getCpf();
 		idCliente = clienteResponse.getId();
 		idEndereco = clienteResponse.getEnderecos().get(0).getId();
@@ -103,7 +100,7 @@ public class ClientesTest {
 	@Test
 	@Order(2)
 	public void criarClienteComCpfInvalidoTest() throws Exception {
-		
+
 		Faker faker = new Faker();
 
 		CriarClienteRequestDto dto = new CriarClienteRequestDto();
@@ -133,20 +130,20 @@ public class ClientesTest {
 	@Test
 	@Order(3)
 	public void criarClienteComDadosDoClienteInvalidosTest() throws Exception {
-		
+
 		CriarClienteRequestDto dto = new CriarClienteRequestDto();
 		dto.setNome("");
 		dto.setEmail("");
 		dto.setCpf("");
 		dto.setDataNascimento(null);
-		
+
 		MvcResult result = mockMvc
 				.perform(post("/api/clientes/criar").contentType("application/json")
 						.content(objectMapper.writeValueAsString(dto)))
 				.andExpectAll(status().isBadRequest()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-		
+
 		assertTrue(content.contains("nome: Por favor, informe o nome do cliente."));
 		assertTrue(content.contains("nome: Por favor, insira um nome válido."));
 		assertTrue(content.contains("email: Por favor, informe o email do cliente."));
@@ -159,15 +156,15 @@ public class ClientesTest {
 	@Test
 	@Order(4)
 	public void criarClienteComDadosDoEnderecoInvalidosTest() throws Exception {
-		
+
 		Faker faker = new Faker();
-		
+
 		CriarClienteRequestDto dto = new CriarClienteRequestDto();
 		dto.setNome(faker.name().fullName());
 		dto.setEmail(faker.internet().emailAddress());
 		dto.setCpf(faker.number().digits(11));
 		dto.setDataNascimento(faker.date().birthday());
-		
+
 		dto.setEndereco(new CriarEnderecoRequestDto());
 		dto.getEndereco().setLogradouro("");
 		dto.getEndereco().setComplemento("");
@@ -183,7 +180,7 @@ public class ClientesTest {
 				.andExpectAll(status().isBadRequest()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-		
+
 		assertTrue(content.contains("Por favor, informe o logradouro do cliente."));
 		assertTrue(content.contains("Por favor, informe um logradouro válido."));
 		assertTrue(content.contains("Por favor, informe o complemento do endereço."));
@@ -199,11 +196,11 @@ public class ClientesTest {
 		assertTrue(content.contains("Por favor, informe o CEP do endereço."));
 		assertTrue(content.contains("Por favor, informe um CEP no formato '12345-678'."));
 	}
-	
+
 	@Test
 	@Order(5)
 	public void atualizarClienteComSucessoTest() throws Exception {
-		
+
 		Faker faker = new Faker();
 
 		AtualizarClienteRequestDto dto = new AtualizarClienteRequestDto();
@@ -212,7 +209,7 @@ public class ClientesTest {
 		dto.setEmail(faker.internet().emailAddress());
 		dto.setCpf(faker.number().digits(11));
 		dto.setDataNascimento(faker.date().birthday());
-		
+
 		dto.setEndereco(new AtualizarEnderecoRequestDto());
 		dto.getEndereco().setId(idEndereco);
 		dto.getEndereco().setLogradouro(faker.regexify("[a-zA-ZÀ-ÿ0-9\s]{10,100}"));
@@ -225,16 +222,16 @@ public class ClientesTest {
 
 		MvcResult result = mockMvc.perform(put("/api/clientes/atualizar").contentType("application/json")
 				.content(objectMapper.writeValueAsString(dto))).andExpectAll(status().isOk()).andReturn();
-		
+
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-		System.out.println("\nEste é o conteúdo de atualizar cliente com sucesso (inicio)\n" + content + "\nEste foi o conteúdo de atualizar cliente com sueesso (final)\n");
+
 		ClienteResponseDto clienteResponse = objectMapper.readValue(content, ClienteResponseDto.class);
 		assertNotNull(clienteResponse.getId());
 		assertEquals(clienteResponse.getNome(), dto.getNome());
 		assertEquals(clienteResponse.getEmail(), dto.getEmail());
 		assertEquals(clienteResponse.getCpf(), dto.getCpf());
 		assertEquals(clienteResponse.getDataNascimento(), dto.getDataNascimento());
-		
+
 		assertNotNull(clienteResponse.getEnderecos().get(0).getId());
 		assertEquals(clienteResponse.getEnderecos().get(0).getLogradouro(), dto.getEndereco().getLogradouro());
 		assertEquals(clienteResponse.getEnderecos().get(0).getComplemento(), dto.getEndereco().getComplemento());
@@ -248,7 +245,7 @@ public class ClientesTest {
 	@Test
 	@Order(6)
 	public void atualizarClienteComIdDoClienteInvalidoTest() throws Exception {
-		
+
 		Faker faker = new Faker();
 
 		AtualizarClienteRequestDto dto = new AtualizarClienteRequestDto();
@@ -274,14 +271,13 @@ public class ClientesTest {
 				.andExpectAll(status().isBadRequest()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-		System.out.println("\nEste é o conteúdo de atualizar cliente com CLIENTE (inicio)\n" + content + "\nEste foi o conteúdo de atualizar cliente com CLIENTE (final)\n");
 		assertTrue(content.contains("Não foi possível encontrar um cliente com o ID informado."));
 	}
 
 	@Test
 	@Order(7)
 	public void atualizarClienteComIdDoEnderecoInvalidoTest() throws Exception {
-		
+
 		Faker faker = new Faker();
 
 		AtualizarClienteRequestDto dto = new AtualizarClienteRequestDto();
@@ -307,14 +303,13 @@ public class ClientesTest {
 				.andExpectAll(status().isBadRequest()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-		System.out.println("\nEste é o conteúdo de atualizar cliente com ENDERECO (inicio)\n" + content + "\nEste foi o conteúdo de atualizar cliente com ENDERECO (final)\n");
 		assertTrue(content.contains("Não foi possível encontrar um endereço com o ID informado."));
 	}
 
 	@Test
 	@Order(8)
 	public void atualizarClienteComCpfInvalidoTest() throws Exception {
-		
+
 		Faker faker = new Faker();
 
 		AtualizarClienteRequestDto dto = new AtualizarClienteRequestDto();
@@ -323,7 +318,7 @@ public class ClientesTest {
 		dto.setEmail(faker.internet().emailAddress());
 		dto.setCpf("00000000000");
 		dto.setDataNascimento(faker.date().birthday());
-		
+
 		dto.setEndereco(new AtualizarEnderecoRequestDto());
 		dto.getEndereco().setId(idEndereco);
 		dto.getEndereco().setLogradouro(faker.regexify("[a-zA-ZÀ-ÿ0-9\s]{10,100}"));
@@ -334,8 +329,10 @@ public class ClientesTest {
 		dto.getEndereco().setUf(faker.regexify("[A-Z]{2}"));
 		dto.getEndereco().setCep(faker.regexify("\\d{5}-\\d{3}"));
 
-		MvcResult result = mockMvc.perform(put("/api/clientes/atualizar").contentType("application/json")
-				.content(objectMapper.writeValueAsString(dto))).andExpectAll(status().isUnprocessableEntity()).andReturn();
+		MvcResult result = mockMvc
+				.perform(put("/api/clientes/atualizar").contentType("application/json")
+						.content(objectMapper.writeValueAsString(dto)))
+				.andExpectAll(status().isUnprocessableEntity()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 		assertTrue(content.contains("O CPF informado pertence a outro cliente."));
@@ -351,12 +348,14 @@ public class ClientesTest {
 		dto.setEmail("");
 		dto.setCpf("");
 		dto.setDataNascimento(null);
-		
-		MvcResult result = mockMvc.perform(put("/api/clientes/atualizar").contentType("application/json")
-				.content(objectMapper.writeValueAsString(dto))).andExpectAll(status().isBadRequest()).andReturn();
-		
+
+		MvcResult result = mockMvc
+				.perform(put("/api/clientes/atualizar").contentType("application/json")
+						.content(objectMapper.writeValueAsString(dto)))
+				.andExpectAll(status().isBadRequest()).andReturn();
+
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-		
+
 		assertTrue(content.contains("id: Por favor, informe o ID do cliente."));
 		assertTrue(content.contains("nome: Por favor, informe o nome do cliente."));
 		assertTrue(content.contains("nome: Por favor, insira um nome válido."));
@@ -390,11 +389,13 @@ public class ClientesTest {
 		dto.getEndereco().setUf("");
 		dto.getEndereco().setCep("");
 
-		MvcResult result = mockMvc.perform(put("/api/clientes/atualizar").contentType("application/json")
-				.content(objectMapper.writeValueAsString(dto))).andExpectAll(status().isBadRequest()).andReturn();
-		
+		MvcResult result = mockMvc
+				.perform(put("/api/clientes/atualizar").contentType("application/json")
+						.content(objectMapper.writeValueAsString(dto)))
+				.andExpectAll(status().isBadRequest()).andReturn();
+
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-		System.out.println("\nEste é o conteúdo de atualizar cliente com DADOS INVALIDOS (inicio)\n" + content + "\nEste foi o conteúdo de atualizar cliente com DADOS INVALIDOS (final)\n");
+
 		assertTrue(content.contains("Por favor, informe o ID do endereço."));
 		assertTrue(content.contains("Por favor, informe o logradouro do cliente."));
 		assertTrue(content.contains("Por favor, informe um logradouro válido."));
@@ -411,30 +412,24 @@ public class ClientesTest {
 		assertTrue(content.contains("Por favor, informe o CEP do endereço."));
 		assertTrue(content.contains("Por favor, informe um CEP no formato '12345-678'."));
 	}
-	
+
 	@Test
 	@Order(11)
 	public void obterClienteComSucessoTest() throws Exception {
-		fail("Teste em espera.");
-		Cliente cliente = new Cliente();
-		cliente.setId(idCliente);
 
-		MvcResult result = mockMvc.perform(get("/api/clientes/obter").contentType("application/json")
-				.content(objectMapper.writeValueAsString(cliente))).andExpectAll(status().isOk()).andReturn();
+		MvcResult result = mockMvc.perform(get("/api/clientes/obter/" + idCliente).contentType("application/json"))
+				.andExpectAll(status().isOk()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-		assertTrue(content.contains(""));
+		assertTrue(content.contains((idCliente).toString()));
 	}
 
 	@Test
 	@Order(12)
 	public void obterClienteComIdInvalidoTest() throws Exception {
-		fail("Teste em espera.");
-		Cliente cliente = new Cliente();
 
 		MvcResult result = mockMvc
-				.perform(get("/api/clientes/obter").contentType("application/json")
-						.content(objectMapper.writeValueAsString(cliente)))
+				.perform(get("/api/clientes/obter/" + UUID.randomUUID().toString()).contentType("application/json"))
 				.andExpectAll(status().isBadRequest()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
@@ -444,14 +439,14 @@ public class ClientesTest {
 	@Test
 	@Order(13)
 	public void consultarClientesComSucessoTest() throws Exception {
-		fail("Teste em espera.");
+		
 		List<Cliente> clientes = new ArrayList<Cliente>();
 
-		MvcResult result = mockMvc.perform(get("/api/clientes/obter").contentType("application/json")
+		MvcResult result = mockMvc.perform(get("/api/clientes/consultar").contentType("application/json")
 				.content(objectMapper.writeValueAsString(clientes))).andExpectAll(status().isOk()).andReturn();
 
 		String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-		assertTrue(content.contains(""));
+		assertTrue(content.contains((idCliente).toString()));
 	}
 
 	@Test
@@ -470,7 +465,7 @@ public class ClientesTest {
 	@Test
 	@Order(15)
 	public void deletarClienteComIdInvalidoTest() throws Exception {
-		
+
 		MvcResult result = mockMvc
 				.perform(delete("/api/clientes/deletar/{id}", idCliente.toString()).contentType("application/json"))
 				.andExpectAll(status().isBadRequest()).andReturn();

@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -67,6 +68,20 @@ public class ClientesController {
 	public ResponseEntity<ClienteResponseDto> deletar(@PathVariable("id") UUID id) {
 		
 		ClienteResponseDto response = clienteDomainService.deletarCliente(id);
+		return ResponseEntity.status(200).body(response);
+	}
+	
+	@GetMapping("obter/{id}")
+	public ResponseEntity<ClienteResponseDto> obter(@PathVariable("id") UUID id) {
+		
+		ClienteResponseDto response = clienteDomainService.obterCliente(id);
+		return ResponseEntity.status(200).body(response);
+	}
+	
+	@GetMapping("consultar")
+	public ResponseEntity<List<ClienteResponseDto>> consultar() {
+		
+		List<ClienteResponseDto> response = clienteDomainService.consultarClientes();
 		return ResponseEntity.status(200).body(response);
 	}
 }
