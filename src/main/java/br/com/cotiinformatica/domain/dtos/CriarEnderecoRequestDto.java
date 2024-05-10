@@ -2,12 +2,13 @@ package br.com.cotiinformatica.domain.dtos;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class CriarEnderecoRequestDto {
 
-	@Pattern(regexp = "^[a-zA-ZÀ-ÿ0-9\s]{10,100}$", message = "Por favor, informe um logradouro válido.")
+	@Size(min = 10, max = 100, message = "Por favor, informe um logradouro válido.")
 	@NotEmpty(message = "Por favor, informe o logradouro do cliente.")
 	private String logradouro;
 
