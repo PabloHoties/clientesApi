@@ -33,7 +33,7 @@ public class ClientesController {
 	private Validator validator;
 
 	@PostMapping("criar")
-	public ResponseEntity<Object> criar(@RequestBody @Valid CriarClienteRequestDto dto) {
+	public ResponseEntity<Object> criar(@RequestBody @Valid CriarClienteRequestDto dto) throws Exception {
 	
 		List<String> errors = new ArrayList<>();
 		validator.validate(dto.getEndereco()).forEach(violation -> {

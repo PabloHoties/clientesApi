@@ -9,7 +9,7 @@ import br.com.cotiinformatica.domain.dtos.CriarClienteRequestDto;
 
 public interface ClienteDomainService {
 
-	ClienteResponseDto criarCliente(CriarClienteRequestDto dto);
+	ClienteResponseDto criarCliente(CriarClienteRequestDto dto) throws Exception;
 	
 	ClienteResponseDto atualizarCliente(AtualizarClienteRequestDto dto);
 	

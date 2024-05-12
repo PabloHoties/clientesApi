@@ -18,6 +18,7 @@ import br.com.cotiinformatica.domain.dtos.CriarClienteRequestDto;
 import br.com.cotiinformatica.domain.entities.Cliente;
 import br.com.cotiinformatica.domain.entities.Endereco;
 import br.com.cotiinformatica.domain.interfaces.ClienteDomainService;
+import br.com.cotiinformatica.infrastructure.components.RabbitMQSenderComponent;
 import br.com.cotiinformatica.infrastructure.repositories.ClienteRepository;
 import br.com.cotiinformatica.infrastructure.repositories.EnderecoRepository;
 
@@ -32,9 +33,12 @@ public class ClienteDomainServiceImpl implements ClienteDomainService {
 
 	@Autowired
 	ModelMapper modelMapper;
+	
+	@Autowired
+	RabbitMQSenderComponent rabbitMQSenderComponent;
 
 	@Override
-	public ClienteResponseDto criarCliente(CriarClienteRequestDto dtoCliente) {
+	public ClienteResponseDto criarCliente(CriarClienteRequestDto dtoCliente) throws Exception {
 
 		if (clienteRepository.findByCpf(dtoCliente.getCpf()).isPresent())
 			throw new ResponseStatusException(HttpStatusCode.valueOf(422), "O CPF informado já está cadastrado.");		
@@ -49,6 +53,8 @@ public class ClienteDomainServiceImpl implements ClienteDomainService {
 		clienteRepository.save(cliente);
 		enderecoRepository.save(endereco);
 
+		rabbitMQSenderComponent.sendMessage(cliente);
+		
 		cliente.setEnderecos(new ArrayList<Endereco>());
 		cliente.getEnderecos().add(endereco);
 

@@ -18,7 +18,7 @@ public class AtualizarEnderecoRequestDto {
 	@NotEmpty(message = "Por favor, informe o logradouro do cliente.")
 	private String logradouro;
 
-	@Pattern(regexp = "^[a-zA-ZÀ-ÿ0-9\s]{5,25}$", message = "Por favor, informe um complemento válido.")
+	@Pattern(regexp = "^[a-zA-ZÀ-ÿ0-9\\s.,]{5,25}$", message = "Por favor, informe um complemento válido.")
 	@NotEmpty(message = "Por favor, informe o complemento do endereço.")
 	private String complemento;
 
